@@ -43,6 +43,8 @@ default_native = False
 # link_id used for signing
 global_link_id = 0
 
+udp_offset = 0
+
 # Use a globally-set MAVLink dialect if one has been specified as an environment variable.
 if not 'MAVLINK_DIALECT' in os.environ:
     os.environ['MAVLINK_DIALECT'] = 'ardupilotmega'
@@ -1064,8 +1066,10 @@ class mavudp(mavfile):
             self.port.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.port.bind((a[0], int(a[1])))
         else:
+            global udp_offset
             self.destination_addr = (a[0], int(a[1]))
-            self.port.bind(('', 14552))
+            self.port.bind(('', 14560+udp_offset))
+            udp_offset = udp_offset+2
             if broadcast:
                 self.port.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                 self.broadcast = True
